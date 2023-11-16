@@ -1,0 +1,17 @@
+.mb-1 {
+    margin-bottom: 1rem; /* Add one line of space */
+  }
+  
+.font-weight-bold {
+    font-weight: bold; /* Make text bold */
+}
+  
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.table-container {
+  /* max-height: 700px; Set the maximum height you prefer */
+  overflow: auto;
+}
