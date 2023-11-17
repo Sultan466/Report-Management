@@ -1,27 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Chart from 'chart.js/auto'; // Import Chart.js
-import '../../../css/styles.css';
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+import React, { useState, useEffect, useRef } from "react";
+import Chart from "chart.js/auto"; // Import Chart.js
+import "../../../css/styles.css";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function Personnel() {
-  const [selectedYear, setSelectedYear] = useState('2023');
-  const [selectedStartMonth, setSelectedStartMonth] = useState('Jan');
-  const [selectedEndMonth, setSelectedEndMonth] = useState('Dec');
+  const [selectedYear, setSelectedYear] = useState("2023");
+  const [selectedStartMonth, setSelectedStartMonth] = useState("Jan");
+  const [selectedEndMonth, setSelectedEndMonth] = useState("Dec");
   const [chartData, setChartData] = useState(null);
   const [generatedData, setGeneratedData] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Added loading state
 
   const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
-  const personnelColumns = ['TRP', 'BSE', 'RTA', 'SCK', 'CL', 'ANL', 'OTH'];
+  const personnelColumns = ["TRP", "BSE", "RTA", "SCK", "CL", "ANL", "OTH"];
 
   const handleStartMonthChange = (e) => {
     setSelectedStartMonth(e.target.value);
@@ -60,20 +70,20 @@ function Personnel() {
   const createChart = () => {
     const monthsInRange = getMonthsInRange();
     const totalValues = generatedData.map((row) => calculateRowTotal(row));
+    // console.log(totalValues, "total");
 
     setChartData({
       labels: monthsInRange.map((month) => `${month}-${selectedYear.slice(2)}`),
       datasets: [
         {
-          label: 'TOTAL',
+          label: "TOTAL",
           data: totalValues,
-          borderColor: 'blue',
+          borderColor: "blue",
           fill: false,
         },
       ],
     });
   };
-
 
   useEffect(() => {
     generateRandomData();
@@ -83,7 +93,7 @@ function Personnel() {
     if (!isLoading) {
       createChart();
     }
-  }, [isLoading, selectedStartMonth, selectedEndMonth]);
+  }, [isLoading, selectedStartMonth, selectedEndMonth, generatedData]);
 
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null); // Store a reference to the Chart instance
@@ -91,12 +101,13 @@ function Personnel() {
   useEffect(() => {
     if (chartData) {
       if (chartInstanceRef.current) {
+        // console.log(chartInstanceRef.current);
         chartInstanceRef.current.destroy(); // Destroy the previous chart instance
       }
 
-      const ctx = chartRef.current.getContext('2d');
+      const ctx = chartRef.current.getContext("2d");
       const newChartInstance = new Chart(ctx, {
-        type: 'line',
+        type: "line",
         data: chartData,
         options: {
           scales: {
@@ -139,27 +150,31 @@ function Personnel() {
       // Add logic to calculate the maximum value on the y-axis based on your data
       // This ensures that the chart scales properly after resizing
       // Example: Find the maximum value in your data
-      return Math.max(...generatedData.map((row) => calculateRowTotal(row)));
+      const maximum = Math.max(
+        ...generatedData.map((row) => calculateRowTotal(row))
+      );
+      // console.log(maximum);
+      return maximum;
     };
 
     // Initial resize
     resizeCanvas();
 
     // Event listener for screen resize
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
     };
   }, [generatedData]); // Include generatedData in the dependencies to recalculate on data change
-
-
 
   return (
     <div>
       <div className="mb-4">
-        <label htmlFor="yearDropdown" className="font-weight-bold">Select Year:</label>
+        <label htmlFor="yearDropdown" className="font-weight-bold">
+          Select Year:
+        </label>
         <br />
         <select
           id="yearDropdown"
@@ -172,24 +187,32 @@ function Personnel() {
       </div>
 
       <div className="mb-4">
-        <label htmlFor="startMonthDropdown" className="font-weight-bold">Select Start Month:</label>
+        <label htmlFor="startMonthDropdown" className="font-weight-bold">
+          Select Start Month:
+        </label>
         <select
           id="startMonthDropdown"
           value={selectedStartMonth}
           onChange={handleStartMonthChange}
         >
           {months.map((month) => (
-            <option key={month} value={month}>{month}</option>
+            <option key={month} value={month}>
+              {month}
+            </option>
           ))}
         </select>
-        <label htmlFor="endMonthDropdown" className="font-weight-bold ml-4">Select End Month:</label>
+        <label htmlFor="endMonthDropdown" className="font-weight-bold ml-4">
+          Select End Month:
+        </label>
         <select
           id="endMonthDropdown"
           value={selectedEndMonth}
           onChange={handleEndMonthChange}
         >
           {months.map((month) => (
-            <option key={month} value={month}>{month}</option>
+            <option key={month} value={month}>
+              {month}
+            </option>
           ))}
         </select>
       </div>
@@ -197,9 +220,9 @@ function Personnel() {
       <div className="mb-4 table-container">
         <h3>Personnel</h3>
         <div className="container">
-          <div className='row mb-3' style={{height:"345px"}}>
-            <div className='col-lg-12 col-md-12 col-sm-12'>
-              <canvas id='myCanvas' ref={chartRef}></canvas>
+          <div className="row mb-3" style={{ height: "fit-content" }}>
+            <div className="col-lg-12 col-md-12 col-sm-12">
+              <canvas id="myCanvas" ref={chartRef}></canvas>
             </div>
           </div>
         </div>
@@ -219,6 +242,7 @@ function Personnel() {
             <tbody>
               {getMonthsInRange().map((month, index) => {
                 const rowData = generatedData[index];
+
                 return (
                   <tr key={month}>
                     <td>{`${month}-${selectedYear.slice(2)}`}</td>
